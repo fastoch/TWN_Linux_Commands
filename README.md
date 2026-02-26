@@ -1,6 +1,7 @@
-# Intro
+# Resources
 
-src = https://www.youtube.com/watch?v=fwP2JW_VnZI
+- https://www.youtube.com/watch?v=fwP2JW_VnZI
+- https://gitlab.com/twn-youtube/twn-linux-commands
 
 # Scenario 
 
@@ -38,7 +39,49 @@ To know how many .txt files there is within that same folder:
 find ./DevOps -type f -name "*.txt" | grep wc -l
 ```
 
-##
+## `find` + pipe + `xargs` + `cat` + `grep`
+
+Now, the idea is to find all .txt files within a given folder and to search through the contents of these files for specific error messages.  
+
+```bash
+find ./logs/2026-02 -type f -name "*.txt" | xargs cat 
+```
+
+- `cat` displays the contents of a file
+- `xargs` takes input from standard input (stdin) and turns it into arguments for another command
+
+The above command returns the contents of all .txt files within the specified folder.  
+Now we want to filter these contents for specific error messages: 
+```bash
+find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR"
+```
+
+# Let's add `sort` and `uniq`
+
+Then, we can sort the results alphabetically: 
+```bash
+find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR" | sort
+```
+The Unix/Linux `sort` command sorts entire lines by default.  
+It treats each full line as the sort key, using alphabetical order based on the first differing character.  
+
+But we can sort the results based on the 4th whitespace-delimited field (4th column): 
+```bash
+find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4
+```
+
+And finally, we can remove duplicates via the `uniq` command: 
+```bash
+find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4 | uniq
+```
+
+>[!important]
+>Since `uniq` only detects adjacent duplicated lines, it is most often used in a commande pipeline immediately after the `sort` command.
+
+If we don't care about the uniqueness of the first two fields (could be timestamps):
+```bash
+find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4 | uniq -f3
+```
 
 ---
-7/32
+20/32
