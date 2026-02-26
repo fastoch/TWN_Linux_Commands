@@ -56,7 +56,7 @@ Now we want to filter these contents for specific error messages:
 find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR"
 ```
 
-# Let's add `sort` and `uniq`
+# Let's add `sort` and `uniq` to the command pipeline
 
 Then, we can sort the results alphabetically: 
 ```bash
@@ -82,6 +82,10 @@ If we don't care about the uniqueness of the first two fields (could be timestam
 ```bash
 find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4 | uniq -f3
 ```
+
+## Saving the output to a file 
+
+
 
 ---
 20/32
