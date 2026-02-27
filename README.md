@@ -100,9 +100,21 @@ If it already exists, it will be overwritten.
 find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4 | uniq -f3 >> errors.log
 ```
 
-## Making backups of our old log files
+## Making backups before deleting old log files
 
+Let's say we have an automated script running periodically that deletes logs older than 3 months.  
+Those logs may still contain valuable information, so we should back them up somewhere before deletion.  
+
+- `-exec` is a parameter of the `find` command which allows us to execute a specific command on every file that `find` returns
+```bash
+find ./logs/2026-02 -type f -name "*.txt" -exec cp {} /Web_app/logs/2026-02-backup ; 
+```
+For every .txt file inside the specifed folder, execute the copy command.  
+- in a `find ... -exec` command, curly brackets `{}` act as a placeholder that is replaced by the name of each file returned by the search
+
+The `-exec` parameter requires a symbol that marks the end of the command we want to run against every file returned by the `find` command.  
+Which is why we add a semi-colon `;` at the end of the above command.  
 
 
 ---
-23/32
+27/32
