@@ -2,6 +2,7 @@
 
 - https://www.youtube.com/watch?v=fwP2JW_VnZI
 - https://gitlab.com/twn-youtube/twn-linux-commands
+- https://linuxopsys.com/find-exec-command-in-linux-with-examples
 
 # Scenario 
 
@@ -105,16 +106,36 @@ find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4 
 Let's say we have an automated script running periodically that deletes logs older than 3 months.  
 Those logs may still contain valuable information, so we should back them up somewhere before deletion.  
 
-- `-exec` is a parameter of the `find` command which allows us to execute a specific command on every file that `find` returns
+- `-exec` is a parameter of the `find` command which allows us to execute a specific command on every found file
 ```bash
-find ./logs/2026-02 -type f -name "*.txt" -exec cp {} /Web_app/logs/2026-02-backup ; 
+find ./logs/2026-02 -type f -name "*.txt" -exec cp {} /Web_app/logs/2026-02-backup + 
 ```
 For every .txt file inside the specifed folder, execute the copy command.  
-- in a `find ... -exec` command, curly brackets `{}` act as a placeholder that is replaced by the name of each file returned by the search
 
-The `-exec` parameter requires a symbol that marks the end of the command we want to run against every file returned by the `find` command.  
-Which is why we add a semi-colon `;` at the end of the above command.  
+- in a `find ... -exec` command, curly brackets `{}` act as a placeholder that is replaced by the name of each found file
+- The plus sign `+` terminates the `-exec` action, telling `find` where the command argument ends
+  - This `+` delimiter works with `-exec` to pass all found files as arguments to the given command at once
+- Note that we could also use `\;` instead of `+` as a delimiter for the `-exec` command argument
 
+More details about `find ... -exec` commands: https://linuxopsys.com/find-exec-command-in-linux-with-examples  
+
+## Using `rsync`
+
+The previous command can be improved.  
+
+All the files we're targeting are being copied to the same backup folder, and since a folder cannot contain two or more files 
+with the same name, what will happen if our `find` command returns multiple files with the exact same name?  
+> Only the last copied file will be backed up, previous files having the same name will be overwritten.
+
+That's because `cp` performs a straightforward copy of each found file to the destination folder, replacing any existing target file.  
+
+To back up our files without risking losing data in the process, we need to use `rsync -R` instead of `cp`.  
+The `-R` (`--relative`) option for `rsync` tells it to preserve the relative path structure of each source file when copying it to the destination.  
+
+Our final command:
+```bash
+find ./logs/2026-02 -type f -name "*.txt" -exec rsync -R {} /Web_app/logs/2026-02-backup + 
+```
 
 ---
-27/32
+Tutorial completed
