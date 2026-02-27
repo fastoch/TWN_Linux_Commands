@@ -83,9 +83,26 @@ If we don't care about the uniqueness of the first two fields (could be timestam
 find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4 | uniq -f3
 ```
 
-## Saving the output to a file 
+## Saving the output to a file with redirection
+
+- Pipe `|` sends output of a command to another command
+- Redirection `>` sends output to a file, it overwrites any existing contents in this file
+
+```bash
+find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4 | uniq -f3 > errors.log
+```
+If the errors.log file does not exist in the current directory, it will be created.  
+If it already exists, it will be overwritten.  
+
+- `>>` appends the command output at the end of the file, so that existing contents don't get overwritten
+
+```bash
+find ./logs/2026-02 -type f -name "*.txt" | xargs cat | grep "ERROR" | sort -k4 | uniq -f3 >> errors.log
+```
+
+## Making backups of our old log files
 
 
 
 ---
-20/32
+23/32
